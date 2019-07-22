@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tyler's Sample Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 400px;
+	width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    <h1 class="text-center">Tyler's Map</h1>
+    <hr>
+    <p class="text-center">Click the OK button to view map.</p>
+    <div class="mx-auto" id="map"></div>
+    <p class="text-center">This is a map using the Google Map API. With some Bootstrap styling.</p>
+    <p class="text-center">I have added places in and around Boston using markers.</p>
+    <p class="text-center">Click on the markers to display information about each location.</p>
+    </div>
+    <script>
+      var map;
+      function initMap() {
+	//Map options
+        var options = {
+	zoom: 11,
+	center: {lat:42.3601,lng:-71.0589}
+	};
+	
+	//New map
+	var map = new google.maps.Map(document.getElementById('map'), options);
+
+	var coordinates = [
+		{
+			position: {lat:42.4184,lng:-71.1062},
+			content: '<p style="font-weight:bold">My Home Town</p>'
+		},
+		{
+			position: {lat:42.3678,lng:-71.0715},
+			content: '<p style="font-weight:bold">Museum of Science</p>'
+		},
+		{
+			position: {lat:42.3493,lng:-71.0783},
+			content: '<p style="font-weight:bold">Boston Public Library</p>'
+		},
+		{
+			position: {lat:42.3967,lng:-71.1223},
+			content: '<p style="font-weight:bold">Davis Square</p>'
+		},
+		{
+			position: {lat:42.3467,lng:-71.0972},
+			content: '<p style="font-weight:bold">Fenway Park</p>'
+		},
+		{
+			position: {lat:42.3662,lng:-71.0621},
+			content: '<p style="font-weight:bold">TD Garden</p>'
+		}
+	];
+
+	//Loops over all the coordinates to create markers with info windows
+	for(let i = 0; i < coordinates.length ; i++){
+	    addMarker(coordinates[i]);
+	}
+
+	function addMarker(param) {
+	  //Add marker
+	  var marker = new google.maps.Marker({
+	  position: param.position,
+	  map:map,
+	  });
+
+	//Add infowindow
+	var infoWindow = new google.maps.InfoWindow({
+	  content: param.content
+	});
+
+	//Infowindow needs an event listener
+	marker.addListener('click', function(){
+	  infoWindow.open(map,marker);
+	});
+
+	}
+
+	}
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
+    async defer></script>
+  </body>
+</html>

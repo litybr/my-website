@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery Crash Course | Effects & Animate</title>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<style>
+		body{
+			font-size: 17px;
+			font-family: arial;
+			background: #f4f4f4;
+			line-height: 1.5em;
+		}
+		header{
+			background:#333;
+			color:#fff;
+			padding:20px;
+			text-align: center;
+			border-bottom: 4px #000 solid;
+			margin-bottom: 10px;
+		}
+		#container{
+			width:90%;
+			margin:auto;
+			padding:10px;
+		}
+
+		#box{
+			background:#333;
+			color:#fff;
+			width:500px;
+			height:90px;
+			padding:40px;
+			margin-left:400px;
+			text-align:center;
+		}
+
+		#lightBack{
+			background:black;
+			width:100px;
+			height:100px;
+			postion:relative;
+		}
+
+		#lightCenter{
+			width:75px;
+			height:75px;
+			border-radius:50%;
+			position:absolute;
+			margin:12.5px;
+		}
+
+		#moveBox{
+			background:blue;
+			width:100px;
+			height:100px;
+			display:inline-block;
+			position:absolute;
+			left:77px;
+		}
+
+		#finish{
+			background:black;
+			width:20px;
+			height:100px;
+			display:inline-block;
+			position:absolute;
+			left:1097px;
+		}
+
+		.green{
+			background:green
+		}
+
+		.red{
+			background:red
+		}
+
+		.buttons{
+			margin-top:80px
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Green Light Red Light</h1>
+	</header>
+	<div id="container">
+
+		<div id="lightBack">
+			<div id="lightCenter" class="red">
+			</div>
+		</div>
+		<br>
+
+			<div id="moveBox">
+			</div>
+			<div id="finish">
+			</div>
+
+		<div class="buttons">
+			<br>
+			<button id="moveButton">Move Button</button>
+			<button id="stopButton">Stop Button</button>
+			<br>
+		</div>
+	</div>
+
+	<script>
+	var light = "red";
+	var start = 1;
+	var runner = 0;
+	var repeater = null;
+	var timeReducer = 10000;
+	var minusTime = 0;
+
+//The timer for randomized timer for changing the light.
+	function startRepeater() {
+		clearInterval(repeater);
+		repeater = setInterval(changeLight, ((Math.random() * 1000) + 700) );
+	};
+
+//The timer for checking if the user is still moving while the light is red.
+	function checkRed() {
+		clearInterval(repeater);
+		repeater = setInterval(checkLight, 500 );
+	};
+
+//Checks to see if the light is red or if the user is still moving while red.
+	function checkLight() {
+		if(light === "red" && runner === 1){
+			clearInterval(repeater);
+			$('#moveBox').stop();
+			loseDisplay();
+			return
+		}else{
+			startRepeater();
+		}
+	};
+
+//Displays the losing card.
+	function loseDisplay() {
+		$('#container').hide();
+		var lost = `<div id="box">
+				<h1>You Lose</h1>
+				<p>Refresh the page to play again.</p>
+		</div>`;
+		//Method chaining, the 'lost' variable is created first, which is hidden
+		//it is then appended to the body and faded in.
+		$(lost).hide().appendTo('body').fadeIn(2000);
+	};
+
+//Displays the winning card.
+	function winDisplay() {
+		clearInterval(repeater);
+		$('#container').hide();
+		var win = `<div id="box">
+				<h1>You Win</h1>
+				<p>Refresh the page to play again.</p>
+		</div>`;
+		$(win).hide().appendTo('body').fadeIn(2000);
+	};
+
+//Changes the color of the light.
+	function changeLight() {
+		if(light === "red"){
+			light = "green";
+			$('#lightCenter').removeClass('red');
+			$('#lightCenter').addClass('green');
+		}else{
+			light = "red";
+			$('#lightCenter').removeClass('green');
+			$('#lightCenter').addClass('red');
+			checkRed();
+		};
+	};
+
+//Event Handlers
+		$(document).ready(function(){
+
+//When the move button is clicked.
+			$('#moveButton').click(function(){
+				if(start === 1){
+					$('#lightCenter').removeClass('red');
+					$('#lightCenter').addClass('green');
+					light = "green";
+					start = 0;
+				};
+				$('#moveBox').animate({
+					left: 1000
+				},timeReducer,"linear",winDisplay);
+				runner = 1;
+				startRepeater();
+				checkLight();
+			});
+
+//When the stop button is clicked.
+			$('#stopButton').click(function(){
+				$('#moveBox').stop();
+				//Gets the position of the moving box.
+				minusTime = Math.floor($('#moveBox').position().left);
+				//Reduces the time needed to move.
+				//Needed to adjust or else the box will move more slowly towards the goal.
+				//The animate methods always uses a constant time, even if the remaining distance is stort.
+				//1100 insead of 1000 so it moves a little slowly at the end.
+				timeReducer = ((1100-minusTime)/1100)*10000;
+				runner = 0;
+			});
+
+
+			});
+
+	</script>
+</body>
+</html>
